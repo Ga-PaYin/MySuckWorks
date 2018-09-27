@@ -30,7 +30,7 @@ COORD coord;
 
 void move(Tower *a, int n, Tower *b) {
 	if (a->t.top() == n) {
-		Sleep(500);
+		Sleep(100);
 		int line = 0;
 		char name;
 		int amount = a->t.size() + 2;
@@ -54,6 +54,8 @@ void move(Tower *a, int n, Tower *b) {
 		gotoxy(amount,line);
 		cout << '\b' << b->t.top();
 		c++;
+		gotoxy(1, 5);
+		cout << "\b\b\b\b" << c;
 	}
 
 }
