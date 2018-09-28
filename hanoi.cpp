@@ -10,6 +10,7 @@ typedef struct tower Tower;
 struct tower {
 	stack<int> t;
 	char name;
+	int line;
 };
 int c = 0;
 void gotoxy(int x, int y) {
@@ -23,36 +24,28 @@ void gotoxy(int x, int y) {
 }
 HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
 COORD coord;
-/*void hide() {
+void hide() {
 	CONSOLE_CURSOR_INFO cursor_info = { 1,0 };
 	SetConsoleCursorInfo(hout, &cursor_info);
-}*/
-
+}
+int m;
 void move(Tower *a, int n, Tower *b) {
 	if (a->t.top() == n) {
 		Sleep(100);
 		int line = 0;
-		char name;
 		int amount = a->t.size() + 2;
-		switch (a->name) {
-			case 'x': line = 1; name = 'x'; break;
-			case 'y': line = 2; name = 'y'; break;
-			case 'z': line = 3; name = 'z'; break;
+		if (m < 10) {
+			gotoxy(amount, a->line);
+			cout << "\b ";
 		}
-		gotoxy(amount, line);
-		cout << "\b ";
 		b->t.push(a->t.top());
 		a->t.pop();
 		line = 0;
-		name = 'x';
 		amount = b->t.size() + 2;
-		switch (b->name) {
-			case 'x': line = 1; name = 'x'; break;
-			case 'y': line = 2; name = 'y'; break;
-			case 'z': line = 3; name = 'z'; break;
+		if (m < 10) {
+			gotoxy(amount,b->line);
+			cout << '\b' << b->t.top();
 		}
-		gotoxy(amount,line);
-		cout << '\b' << b->t.top();
 		c++;
 		gotoxy(1, 5);
 		cout << "\b\b\b\b" << c;
@@ -74,13 +67,14 @@ int main(int argc, char const *argv[]) {
 
 	int n;//n为输入的数字。
 	cin >> n;
+	m = n;
 	Tower *x = new Tower, *y = new Tower, *z = new Tower;
-	x->name = 'x';
-	y->name = 'y';
-	z->name = 'z';
+	x->name = 'x'; x->line = 1;
+	y->name = 'y'; y->line = 2;
+	z->name = 'z'; z->line = 3;
 	cout << "x:";
 	for (int i = n; i >= 1; i--) {
-		cout << i ;
+		if (m < 10) cout << i;
 		x->t.push(i);
 	}
 	cout << endl << "y:" << endl << "z:";
