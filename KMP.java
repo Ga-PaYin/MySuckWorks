@@ -46,17 +46,23 @@ public class KMP {
                     j++;
                     complited++;
                 } else {
-                    complited = 0;
                     if (j > 0) {
+                        complited = next[j - 1];
                         j = next[j - 1];
                     } else {
+                        complited = 0;
                         i++;
                     }
                 }
                 if (complited == PARTTERN.length()-1) {
-                    if(succeed == false)
+                    if(succeed == false) {
                         System.out.println("匹配成功");
+                        System.out.println("初始位置在第"+(i-j+1)+"位");
+                    }else{
+                        System.out.print("还有"+(i-j+1)+" ");
+                    }
                     succeed = true;
+                    System.out.println();
                     System.out.println(TEXT);
                     for(int t = 0; t < i-j; t++){
                         System.out.print(" ");
