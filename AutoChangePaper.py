@@ -65,7 +65,7 @@ def main():
     HTMLpage = ''
     while HTMLpage == '':
         HTMLpage = getHTML(url)
-    print("grap web successfully")
+    print("grasp web successfully")
     photoAddress = parserHTML(HTMLpage)
     photo = getHTML(photoAddress)
     if photo != '':
