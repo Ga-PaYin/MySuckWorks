@@ -82,6 +82,7 @@ def getmsg(tcpSocket):
     while True:
         conn,addr = tcpSocket.accept()
         message = json.loads(str(conn.recv(1024),encoding='utf-8'))
+        global friendButtonList
         if message['item'] == 'recvmsg':
             global openingChat, nicknameList
             if message['from'] in openingChat.keys():
@@ -114,6 +115,11 @@ def getmsg(tcpSocket):
                 nicknameList[friend['id']] = message['nickname']
                 friendButton = tk.Button(loginedgui,text=friendinfo,command=lambda :chatRoom(friend),anchor=tk.W)
                 friendButton.place(relwidth=1, height=40, relx=0, y=40*len(nicknameList))
+                friendButtonList[friend['id']] = friendButtonList
+        elif message['item'] == 'sta':
+                friendButton = friendButtonList[message['id']]
+                tempstr = friendButton['text'].split(' ')[0]
+                friendButton['text'] = tempstr + ' ' + message['state']
         conn.close()
             
 def newfriendreply(message,answer):
@@ -125,7 +131,7 @@ def newfriendreply(message,answer):
     if result['error'] == 'no error':
         msgBoxAlert('to ' + message['from'],'您的消息已发送成功')
         if answer == 'y':
-            global loginedgui
+            global loginedgui,friendButtonList
             print(message)
             friendinfo = message['mynickname'] + '\n' + message['to'] + ' ' + 'online'
             friend = {
@@ -134,7 +140,7 @@ def newfriendreply(message,answer):
             nicknameList[friend['id']] = message['mynickname']
             friendButton = tk.Button(loginedgui,text=friendinfo,command=lambda :chatRoom(friend),anchor=tk.W)
             friendButton.place(relwidth=1, height=40, relx=0, y=40*len(nicknameList))
-            
+            friendButtonList[friend['id']] = friendButton
     else:
         msgBoxWrong('出错了！！', result['error'])
 
@@ -244,12 +250,13 @@ def logingui(id,password,loginWindow):
         MYNickName = result['nickname']
         newfriendButton = tk.Button(userWindow,text='+',command=askfriend)
         newfriendButton.place(relx=0.9,rely=0.9)
-        global nicknameList
+        global nicknameList,friendButtonList
         for friend in result['friendList']:
             nicknameList[friend['id']] = friend['nickname']
             friendinfo = friend['nickname'] + '\n' + friend['id'] + ' ' + ('online' if friend['online'] == 1 else 'offline')
             friendButton = tk.Button(userWindow,text=friendinfo,command=lambda friend=friend:chatRoom(friend),anchor=tk.W)
             friendButton.place(relwidth=1,height=40,relx=0,y=40*i)
+            friendButtonList[friend['id']] = friendButton
             i += 1
         loginedgui = userWindow
         userWindow.mainloop()
@@ -279,6 +286,7 @@ MYNickName = ''
 openingChat = {}
 nicknameList = {}
 loginedgui = None
+friendButtonList = {}
 if __name__ == "__main__":    
     recvMessage = threading.Thread(target=lambda :getmsg(tcpSocket),daemon=True)
     recvMessage.start()

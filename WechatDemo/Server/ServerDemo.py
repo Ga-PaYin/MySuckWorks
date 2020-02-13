@@ -86,6 +86,14 @@ def login(message):
             result = database_Execute(sql)
             if 'database error' not in result:
                 returnVal['friendList'] = getfriendList(id)
+                for item in returnVal['friendList']:
+                    if item['online'] == 1:
+                        alert = {
+                            'item':'sta','state':'online','id':id
+                        }
+                        jsonmsg = json.dumps(alert)
+                        Addr = getAddr(item['id'])
+                        sendmessage(jsonmsg,Addr)
                 print('friendList = ',end='')
                 print(returnVal['friendList'])
             else:
@@ -96,7 +104,7 @@ def login(message):
 
 def offline():
     while True:
-        time.sleep(60)
+        time.sleep(5)
         print("offline is running")
         sql = 'select id,ipAddress,port from user_info where online = 1;'
         result = database_Execute(sql)
@@ -107,7 +115,7 @@ def offline():
                 checkOnline = json.dumps({'item':'checkOnline'})
                 sendmessage(checkOnline,Addr)
             except:
-                sql = 'update user_info set online = false where id = ' + id + ';'
+                sql = 'update user_info set online = false where id = "' + id + '";'
                 database_Execute(sql)
                 sql = 'select id from id' + id +';'
                 result_ = database_Execute(sql)
@@ -120,7 +128,14 @@ def offline():
                     print(oap)
                     if oap[0][0] == 1:
                         addr = (oap[0][1],oap[0][2])
-                        sendmessage(id + '_offLine', addr)
+                        try:
+                            alertToOffline = {
+                                'item':'sta','id':id,'sta':'offline'
+                            }
+                            jsonmsg = json.dumps(alertToOffline)
+                            sendmessage(jsonmsg, addr)
+                        except:
+                            pass
                 continue
 
 def getAddr(friend):
